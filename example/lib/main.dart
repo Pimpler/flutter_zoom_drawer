@@ -16,7 +16,7 @@ void main() => runApp(EasyLocalization(
 class MyApp extends StatelessWidget {
   static const list = [
     Locale('en', 'US'),
-    Locale('ar', 'TN'),
+    Locale('he', 'IL'),
   ];
 
   @override

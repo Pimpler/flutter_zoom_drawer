@@ -24,18 +24,19 @@ class ZoomDrawerController {
 }
 
 class ZoomDrawer extends StatefulWidget {
-  ZoomDrawer({
-    this.controller,
-    @required this.menuScreen,
-    @required this.mainScreen,
-    this.slideWidth = 275.0,
-    this.borderRadius = 16.0,
-    this.angle = -12.0,
-    this.backgroundColor = Colors.white,
-    this.showShadow = false,
-    this.openCurve,
-    this.closeCurve,
-  }) : assert(angle <= 0.0 && angle >= -30.0);
+  ZoomDrawer(
+      {this.controller,
+      @required this.menuScreen,
+      @required this.mainScreen,
+      this.slideWidth = 275.0,
+      this.borderRadius = 16.0,
+      this.angle = -12.0,
+      this.backgroundColor = Colors.white,
+      this.showShadow = false,
+      this.openCurve,
+      this.closeCurve,
+      this.rtl})
+      : assert(angle <= 0.0 && angle >= -30.0);
 
   /// controller to have access to the open/close/toggle function of the drawer
   final ZoomDrawerController controller;
@@ -67,17 +68,15 @@ class ZoomDrawer extends StatefulWidget {
   /// Drawer slide in curve
   final Curve closeCurve;
 
+  /// Override the RTL configuration
+  final bool rtl;
+
   @override
   _ZoomDrawerState createState() => new _ZoomDrawerState();
 
   /// static function to provide the drawer state
   static _ZoomDrawerState of(BuildContext context) {
     return context.findAncestorStateOfType<State<ZoomDrawer>>();
-  }
-
-  /// Static function to determine the device text direction RTL/LTR
-  static bool isRTL() {
-    return ui.window.locale.languageCode.toLowerCase() == "ar";
   }
 }
 
@@ -87,12 +86,12 @@ class _ZoomDrawerState extends State<ZoomDrawer>
   final Curve _scaleUpCurve = Interval(0.0, 1.0, curve: Curves.easeOut);
   final Curve _slideOutCurve = Interval(0.0, 1.0, curve: Curves.easeOut);
   final Curve _slideInCurve =
-  Interval(0.0, 1.0, curve: Curves.easeOut); // Curves.bounceOut
+      Interval(0.0, 1.0, curve: Curves.easeOut); // Curves.bounceOut
 
   /// check the slide direction
-  final int _rtlSlide = ZoomDrawer.isRTL() ? -1 : 1;
+  int _rtlSlide = -1;
 
-  final bool _rtl = ZoomDrawer.isRTL();
+  bool _rtl = false;
 
   AnimationController _animationController;
   DrawerState _state = DrawerState.closed;
@@ -128,6 +127,9 @@ class _ZoomDrawerState extends State<ZoomDrawer>
   @override
   void initState() {
     super.initState();
+
+    this._rtlSlide = widget.rtl ? -1 : 1;
+    this._rtl = widget.rtl;
 
     stateNotifier = ValueNotifier(_state);
 
@@ -165,7 +167,6 @@ class _ZoomDrawerState extends State<ZoomDrawer>
       widget.controller.stateNotifier = stateNotifier;
     }
   }
-
 
   _updateStatusNotifier() {
     stateNotifier.value = _state;
@@ -263,10 +264,7 @@ class _ZoomDrawerState extends State<ZoomDrawer>
   @override
   Widget build(BuildContext context) {
     final slidePercent =
-    ZoomDrawer.isRTL() ? MediaQuery
-        .of(context)
-        .size
-        .width * .1 : 15.0;
+        widget.rtl ? MediaQuery.of(context).size.width * .1 : 15.0;
 
     return Stack(
       children: [
@@ -282,15 +280,13 @@ class _ZoomDrawerState extends State<ZoomDrawer>
           },
         ),
         if (widget.showShadow) ...[
-
           /// Displaying the first shadow
           AnimatedBuilder(
             animation: _animationController,
-            builder: (_, w) =>
-                _zoomAndSlideContent(w,
-                    angle: (widget.angle == 0.0) ? 0.0 : widget.angle - 8,
-                    scale: .9,
-                    slide: slidePercent * 2),
+            builder: (_, w) => _zoomAndSlideContent(w,
+                angle: (widget.angle == 0.0) ? 0.0 : widget.angle - 8,
+                scale: .9,
+                slide: slidePercent * 2),
             child: Container(
               color: widget.backgroundColor.withAlpha(31),
             ),
@@ -299,11 +295,10 @@ class _ZoomDrawerState extends State<ZoomDrawer>
           /// Displaying the second shadow
           AnimatedBuilder(
             animation: _animationController,
-            builder: (_, w) =>
-                _zoomAndSlideContent(w,
-                    angle: (widget.angle == 0.0) ? 0.0 : widget.angle - 4.0,
-                    scale: .95,
-                    slide: slidePercent),
+            builder: (_, w) => _zoomAndSlideContent(w,
+                angle: (widget.angle == 0.0) ? 0.0 : widget.angle - 4.0,
+                scale: .95,
+                slide: slidePercent),
             child: Container(
               color: widget.backgroundColor,
             ),

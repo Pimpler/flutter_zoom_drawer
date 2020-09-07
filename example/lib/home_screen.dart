@@ -38,10 +38,10 @@ class _HomeScreenState extends State<HomeScreen> {
       borderRadius: 24.0,
 //      showShadow: true,
       angle: 0.0,
-      slideWidth:
-          MediaQuery.of(context).size.width * (ZoomDrawer.isRTL() ? .45 : 0.65),
+      slideWidth: MediaQuery.of(context).size.width * (true ? .45 : 0.65),
       openCurve: Curves.fastOutSlowIn,
       closeCurve: Curves.bounceIn,
+      rtl: true,
     );
   }
 
@@ -59,7 +59,7 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
-    final rtl = ZoomDrawer.isRTL();
+    final rtl = true;
     return ValueListenableBuilder<DrawerState>(
       valueListenable: ZoomDrawer.of(context).stateNotifier,
       builder: (context, state, child) {
